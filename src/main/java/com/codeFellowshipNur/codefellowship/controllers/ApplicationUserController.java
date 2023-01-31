@@ -1,7 +1,7 @@
-package com.codeFellowshipNur.controllers;
+package com.codeFellowshipNur.codefellowship.controllers;
 
-import com.codeFellowshipNur.models.ApplicationUser;
-import com.codeFellowshipNur.repositories.ApplicationUserRepository;
+import com.codeFellowshipNur.codefellowship.models.ApplicationUser;
+import com.codeFellowshipNur.codefellowship.repositories.ApplicationUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -38,9 +38,9 @@ public class ApplicationUserController {
         // Save the user
         applicationUserRepository.save(newUser);
         // Auto login
-
+        autoAuthWithHttpServletRequest(username, password);
         // Return redirectView
-        return  new RedirectView("/login");
+        return new RedirectView("/");
     }
     public void autoAuthWithHttpServletRequest(String username, String password){
         try {
@@ -50,14 +50,14 @@ public class ApplicationUserController {
         }
     }
 
-    @GetMapping("login")
+    @GetMapping("/login")
     public String getLoginPage(){
         return "login";
     }
 
     @GetMapping("/signup")
     public String getSignupPage(){
-        return "signup.html";
+        return "signup";
     }
 
     // GET route /
@@ -67,18 +67,16 @@ public class ApplicationUserController {
             String username = p.getName();
             ApplicationUser dbUser = applicationUserRepository.findByUsername(username);
 
-            m.addAllAttributes("username", username);
-            m.addAllAttributes("FirstName", dbUser.getFirstName());
-            m.addAllAttributes("LastName", dbUser.getLastName());
-
-
+            m.addAttribute("username", username);
+            m.addAttribute("FirstName", dbUser.getFirstName());
+            m.addAttribute("LastName", dbUser.getLastName());
         }
         return "index.html";
     }
     //GET rout to /secret sauce
     @GetMapping("/secret")
     public String getSecretSauce(){
-        return "secretSauce.html";
+        return "secretSauce";
     }
 
 }

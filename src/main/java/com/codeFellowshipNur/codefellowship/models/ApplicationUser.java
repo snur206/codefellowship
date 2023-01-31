@@ -1,4 +1,4 @@
-package com.codeFellowshipNur.models;
+package com.codeFellowshipNur.codefellowship.models;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
