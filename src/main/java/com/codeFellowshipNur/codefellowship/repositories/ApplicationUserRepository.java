@@ -1,6 +1,6 @@
-package com.codeFellowshipNur.repositories;
+package com.codeFellowshipNur.codefellowship.repositories;
 
-import com.codeFellowshipNur.models.ApplicationUser;
+import com.codeFellowshipNur.codefellowship.models.ApplicationUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 // TODO: Step 1: Create ApplicationUser Repo

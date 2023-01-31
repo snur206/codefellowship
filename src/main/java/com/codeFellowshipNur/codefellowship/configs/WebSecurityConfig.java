@@ -1,4 +1,4 @@
-package com.codeFellowshipNur.configs;
+package com.codeFellowshipNur.codefellowship.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.codeFellowshipNur.configs.ApplicationUserDetailsServiceImpl;
 
 // TODO Step 5: Create the WebSecruityConfig
 @Configuration
@@ -17,7 +16,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     //TODO: wire up the ApplicationUserDetailsServiceImpl
     @Autowired
     ApplicationUserDetailsServiceImpl applicationUserDetailsService;
-
     // passwordEncoder bean
     @Bean
     public PasswordEncoder passwordEncoder(){
