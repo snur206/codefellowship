@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.ui.Model;
 
@@ -63,7 +66,8 @@ public class ApplicationUserController {
     // GET route /
     @GetMapping("/")
     public String getHome(Model m, Principal p){
-        if(p != null){
+        try {
+        if(p != null) {
             String username = p.getName();
             ApplicationUser dbUser = applicationUserRepository.findByUsername(username);
 
@@ -71,12 +75,47 @@ public class ApplicationUserController {
             m.addAttribute("FirstName", dbUser.getFirstName());
             m.addAttribute("LastName", dbUser.getLastName());
         }
+
+
+        } catch (RuntimeException runtimeException) {
+            throw new RuntimeException("Error message! Something is wrong.");
+        }
         return "index.html";
     }
     //GET rout to /secret sauce
     @GetMapping("/secret")
     public String getSecretSauce(){
         return "secretSauce";
+    }
+
+    @GetMapping("/user/{id}")
+    public String getOneAppUser(@PathVariable Long id, Model m, Principal p){
+        ApplicationUser authenticatedUser = applicationUserRepository.findByUsername(p.getName());
+        m.addAttribute("authUser", authenticatedUser);
+        // Find user by ID from DB
+        ApplicationUser viewUser = applicationUserRepository.findById(id).orElseThrow();
+        // Attach the user to the model
+        m.addAttribute("viewUser", viewUser);
+        return "myProfile.html";
+    }
+
+    @PutMapping("/user/{id}")
+    public RedirectView editAppUserInfo(@PathVariable Long id, String username, String firstName, String lastName, Principal p, RedirectAttributes redir) throws ServletException {
+        // Find user to edit
+        ApplicationUser userToBeEdited = applicationUserRepository.findById(id).orElseThrow();
+        if (p.getName().equals(userToBeEdited.getUsername())) {
+        // Update user
+        userToBeEdited.setUsername(username);
+        userToBeEdited.setFirstName(firstName);
+        userToBeEdited.setLastName(lastName);
+        // Save edited user back to db
+        applicationUserRepository.save(userToBeEdited);
+        request.logout();
+        autoAuthWithHttpServletRequest(username, userToBeEdited.getPassword());
+        } else {
+            redir.addFlashAttribute("errorMessage", "Can't edit another user's info!");
+        }
+        return new RedirectView("/user/" + id);
     }
 
 }

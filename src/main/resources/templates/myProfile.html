@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="/fragments/nav-header" :: h3></div>
+<div th:replace="/fragments/nav-header" :: auth-user ></div>
+<div th:replace="/fragments/error-fragments" :: user-error ></div>
+<a href="https://placeholder.com"><img src="https://via.placeholder.com/150"></a>
+
+<h1 th:text="${'User info for user id: ' + viewUser.id + ' with the username: ' + viewUser.username} "></h1>
+
+<form th:action="${'/user/' + viewUser.id}" th:method="PUT">
+    <label for="username">Username</label>
+    <input th:value="${viewUser.username}" type="text" name="username" th:disabled="${!authUser.username.equals(viewUser.username)}"/>
+    <label for="FirstName">First Name</label>
+    <input th:value="${viewUser.firstName}" type="text" name="FirstName" th:disabled="${!authUser.username.equals(viewUser.username)}"/>
+    <label for="LastName">Last Name</label>
+    <input th:value="${viewUser.lastName}" type="text" name="LastName"th:disabled="${!authUser.username.equals(viewUser.username)}"/>
+    <input type="submit" value="Edit User Info"/>
+</form>
+</body>
+</html>

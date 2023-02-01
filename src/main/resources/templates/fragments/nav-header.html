@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3 th:if="${authUser}" th:text="'Current user from Fragment 1 is: ' + ${authUser.username}"></h3>
+<nav th:if="${authUser}" th:fragment="auth-user" th:text="'Current user from Fragment 2 is: ' + ${authUser.username}"></nav>
+
+</body>
+</html>
