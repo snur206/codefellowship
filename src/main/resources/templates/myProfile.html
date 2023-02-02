@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+<link href="/css/style.css" rel="stylesheet">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<div th:replace="/fragments/nav-header" :: h3></div>
-<div th:replace="/fragments/nav-header" :: auth-user ></div>
-<div th:replace="/fragments/error-fragments" :: user-error ></div>
+<div th:replace="/fragments/nav-header :: h3"></div>
+<div th:replace="/fragments/nav-header :: auth-user"></div>
+<div th:replace="/fragments/error-fragments :: user-error"></div>
 <a href="https://placeholder.com"><img src="https://via.placeholder.com/150"></a>
 
+<h3></h3>
 <h1 th:text="${'User info for user id: ' + viewUser.id + ' with the username: ' + viewUser.username} "></h1>
 
 <form th:action="${'/user/' + viewUser.id}" th:method="PUT">
@@ -21,5 +23,21 @@
     <input th:value="${viewUser.lastName}" type="text" name="LastName"th:disabled="${!authUser.username.equals(viewUser.username)}"/>
     <input type="submit" value="Edit User Info"/>
 </form>
+
+<form th:action="${'/follow-user/' + viewUser.id}" th:method="PUT">
+    <input type="hidden" th:value="${viewUser.username}">
+    <input type="submit" value="Follow User" th:disabled="${authUser.username.equals(viewUser.username)}">
+</form>
+
+<h2>Users Follows</h2>
+<ul th:each="followedUser : ${usersIFollow}">
+    <li th:text="${followedUser.username}"></li>
+</ul>
+
+<h2>Users Following</h2>
+<ul th:each="userThatFollows : ${usersWhoFollowMe}">
+    <li th:text="${userThatFollows.username}"></li>
+</ul>
+
 </body>
 </html>
