@@ -13,11 +13,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.ui.Model;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Date;
+
 
 // TODO: Step 2: Create controller for ApplicationUser
 @Controller
@@ -33,11 +38,19 @@ public class ApplicationUserController {
     HttpServletRequest request;
     //POST route to create new ApplicationUser
     @PostMapping("/signup")
-    public RedirectView createApplicationUser(String username, String password, String firstName, String lastName, Date dateOfBirth, String bio){
+    public RedirectView createApplicationUser(String username, String password, String firstName, String lastName, String dateOfBirth, String bio){
         // Hash the PW
         String hashedPW = passwordEncoder.encode(password);
         // Create user
-        ApplicationUser newUser = new ApplicationUser(username, hashedPW, firstName, lastName, new Date(), bio);
+        String stringData = dateOfBirth;
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedDate;
+        try {
+            formattedDate = format.parse(stringData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        ApplicationUser newUser = new ApplicationUser(username, hashedPW, firstName, lastName, formattedDate, bio);
         // Save the user
         applicationUserRepository.save(newUser);
         // Auto login
@@ -52,6 +65,10 @@ public class ApplicationUserController {
             se.printStackTrace();
         }
     }
+
+    @PostMapping("/addPost")
+    public RedirectView createPost(Principal p, Model m, String body, Date createdAt);
+
 
     @GetMapping("/login")
     public String getLoginPage(){
@@ -76,7 +93,6 @@ public class ApplicationUserController {
             m.addAttribute("LastName", dbUser.getLastName());
         }
 
-
         } catch (RuntimeException runtimeException) {
             throw new RuntimeException("Error message! Something is wrong.");
         }
@@ -96,6 +112,10 @@ public class ApplicationUserController {
         ApplicationUser viewUser = applicationUserRepository.findById(id).orElseThrow();
         // Attach the user to the model
         m.addAttribute("viewUser", viewUser);
+        // Add usersIFollow and usersWhoFollowMe to the HTML page
+        m.addAttribute("usersIFollow", viewUser.getUsersIFollow());
+        m.addAttribute("usersWhoFollowMe", viewUser.getUsersWhoFollowMe());
+
         return "myProfile.html";
     }
 
@@ -117,5 +137,23 @@ public class ApplicationUserController {
         }
         return new RedirectView("/user/" + id);
     }
+
+    @PutMapping("/follow-user/{id}")
+    public RedirectView followUser(Principal p, @PathVariable Long id) {
+        ApplicationUser userToFollow = applicationUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Error reading user from DB with ID of: " + id));
+        ApplicationUser browsingUser = applicationUserRepository.findByUsername(p.getName());
+
+        // Check that user is not following themselves
+        if(browsingUser.getUsername().equals(userToFollow.getUsername())) {
+            throw new IllegalArgumentException("Following yourself is weird");
+        }
+        //Access followers from browsing user and update w/ new userToFollow
+        browsingUser.getUsersIFollow().add(userToFollow);
+        // Save to DB
+        applicationUserRepository.save(browsingUser);
+
+        return new RedirectView("/user/" + id);
+    }
+
 
 }

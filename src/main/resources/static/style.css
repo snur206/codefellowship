@@ -1,0 +1,11 @@
+* {
+    background: greenyellow;
+    font-family: 'Dancing Script', cursive;
+
+}
+li {
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 2em;
+}

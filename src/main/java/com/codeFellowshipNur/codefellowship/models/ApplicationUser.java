@@ -3,12 +3,11 @@ package com.codeFellowshipNur.codefellowship.models;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 // TODO 1b: Make user model
 @Entity
@@ -36,6 +35,35 @@ public class ApplicationUser implements UserDetails {
         this.dateOfBirth = dateOfBirth;
         this.bio = bio;
     }
+
+    // Implement many to many
+    @ManyToMany
+    @JoinTable(
+            name = "followers_to_followees",
+            joinColumns = {@JoinColumn(name = "userWhoIsFollowing")},
+            inverseJoinColumns = {@JoinColumn(name = "FollowUser")}
+    )
+    Set<ApplicationUser> usersIFollow = new HashSet<>();
+
+    @ManyToMany(mappedBy = "usersIFollow")
+    Set<ApplicationUser> usersWhoFollowMe = new HashSet<>();
+
+    public Set<ApplicationUser> getUsersIFollow() {
+        return usersIFollow;
+    }
+
+    public void setUsersIFollow(Set<ApplicationUser> usersIFollow) {
+        this.usersIFollow = usersIFollow;
+    }
+
+    public Set<ApplicationUser> getUsersWhoFollowMe() {
+        return usersWhoFollowMe;
+    }
+
+    public void setUsersWhoFollowMe(Set<ApplicationUser> usersWhoFollowMe) {
+        this.usersWhoFollowMe = usersWhoFollowMe;
+    }
+
     // TODO: Getters and Setters
     public Long getId() {
         return id;
