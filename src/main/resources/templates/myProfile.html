@@ -9,35 +9,30 @@
 <div th:replace="/fragments/nav-header :: h3"></div>
 <div th:replace="/fragments/nav-header :: auth-user"></div>
 <div th:replace="/fragments/error-fragments :: user-error"></div>
-<a href="https://placeholder.com"><img src="https://via.placeholder.com/150"></a>
+<h1 th:text="${'Hello, ' + authUser.username + '. Welcome to your profile!'}"></h1>
+<img src="https://via.placeholder.com/150 "/>
 
-<h3></h3>
-<h1 th:text="${'User info for user id: ' + viewUser.id + ' with the username: ' + viewUser.username} "></h1>
 
-<form th:action="${'/user/' + viewUser.id}" th:method="PUT">
-    <label for="username">Username</label>
-    <input th:value="${viewUser.username}" type="text" name="username" th:disabled="${!authUser.username.equals(viewUser.username)}"/>
-    <label for="FirstName">First Name</label>
-    <input th:value="${viewUser.firstName}" type="text" name="FirstName" th:disabled="${!authUser.username.equals(viewUser.username)}"/>
-    <label for="LastName">Last Name</label>
-    <input th:value="${viewUser.lastName}" type="text" name="LastName"th:disabled="${!authUser.username.equals(viewUser.username)}"/>
-    <input type="submit" value="Edit User Info"/>
-</form>
+<h2 th:text="${'Username: ' + authUser.username}"></h2>
+<h2 th:text="${'First name: ' + authUser.firstName}"></h2>
+<h2 th:text="${'Last Name: ' + authUser.lastName}"></h2>
+<!--<h2 th:text="${'DOB: ' + authUser.dateOfBirth}"></h2>-->
+<h2 th:text="${'User Bio: ' + authUser.bio}"></h2>
 
-<form th:action="${'/follow-user/' + viewUser.id}" th:method="PUT">
-    <input type="hidden" th:value="${viewUser.username}">
-    <input type="submit" value="Follow User" th:disabled="${authUser.username.equals(viewUser.username)}">
-</form>
+<!--<form th:action="${'/follow-user/' + viewUser.id}" th:method="PUT">-->
+<!--    <input type="hidden" th:value="${viewUser.username}">-->
+<!--    <input type="submit" value="Follow User" th:disabled="${authUser.username.equals(viewUser.username)}">-->
+<!--</form>-->
 
-<h2>Users Follows</h2>
-<ul th:each="followedUser : ${usersIFollow}">
-    <li th:text="${followedUser.username}"></li>
-</ul>
+<!--<h2>Users Follows</h2>-->
+<!--<ul th:each="followedUser : ${usersIFollow}">-->
+<!--    <li th:text="${followedUser.username}"></li>-->
+<!--</ul>-->
 
-<h2>Users Following</h2>
-<ul th:each="userThatFollows : ${usersWhoFollowMe}">
-    <li th:text="${userThatFollows.username}"></li>
-</ul>
+<!--<h2>Users Following</h2>-->
+<!--<ul th:each="userThatFollows : ${usersWhoFollowMe}">-->
+<!--    <li th:text="${userThatFollows.username}"></li>-->
+<!--</ul>-->
 
 <h2>Add Post</h2>
 <form action="/myProfile" method="POST">
