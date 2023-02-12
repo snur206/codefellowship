@@ -1,7 +1,9 @@
 package com.codeFellowshipNur.codefellowship.controllers;
 
 import com.codeFellowshipNur.codefellowship.models.ApplicationUser;
+import com.codeFellowshipNur.codefellowship.models.Post;
 import com.codeFellowshipNur.codefellowship.repositories.ApplicationUserRepository;
+import com.codeFellowshipNur.codefellowship.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,9 @@ import java.security.Principal;
 public class ApplicationUserController {
     @Autowired
     ApplicationUserRepository applicationUserRepository;
+
+    @Autowired
+    PostRepository postRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -66,8 +71,28 @@ public class ApplicationUserController {
         }
     }
 
-    @PostMapping("/addPost")
-    public RedirectView createPost(Principal p, Model m, String body, Date createdAt);
+    @GetMapping("/myProfile")
+    public String getMyProfile( Model m, Principal p) {
+        ApplicationUser authenticatedUser = applicationUserRepository.findByUsername(p.getName());
+        m.addAttribute("authUser", authenticatedUser);
+        return "myProfile.html";
+    }
+
+
+    @PostMapping("/myProfile")
+    public RedirectView createPost(Principal p, String body, Model m) {
+        if(p!=null){
+            String username = p.getName();
+            ApplicationUser appUser = applicationUserRepository.findByUsername(username);
+            m.addAttribute("addPost", appUser.getListOfPost());
+            Date date = new Date();
+            Post newPost = new Post(body, date, appUser);
+            newPost.setCreatedBy(appUser);
+            postRepository.save(newPost);
+        }
+        return new RedirectView("/myProfile");
+    }
+
 
 
     @GetMapping("/login")
@@ -103,7 +128,6 @@ public class ApplicationUserController {
     public String getSecretSauce(){
         return "secretSauce";
     }
-
     @GetMapping("/user/{id}")
     public String getOneAppUser(@PathVariable Long id, Model m, Principal p){
         ApplicationUser authenticatedUser = applicationUserRepository.findByUsername(p.getName());
@@ -139,18 +163,16 @@ public class ApplicationUserController {
     }
 
     @PutMapping("/follow-user/{id}")
-    public RedirectView followUser(Principal p, @PathVariable Long id) {
-        ApplicationUser userToFollow = applicationUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Error reading user from DB with ID of: " + id));
-        ApplicationUser browsingUser = applicationUserRepository.findByUsername(p.getName());
-
-        // Check that user is not following themselves
-        if(browsingUser.getUsername().equals(userToFollow.getUsername())) {
-            throw new IllegalArgumentException("Following yourself is weird");
+    public RedirectView followUser(Principal p, @PathVariable Long id) throws IllegalAccessException {
+        ApplicationUser userToFollow = applicationUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Error Reading User From The Database with ID of: " + id));
+        ApplicationUser browseUser = applicationUserRepository.findByUsername(p.getName());
+        if (browseUser.getUsername().equals(userToFollow.getUsername())) {
+            throw new IllegalAccessException("Don't Follow Yourself!");
         }
-        //Access followers from browsing user and update w/ new userToFollow
-        browsingUser.getUsersIFollow().add(userToFollow);
-        // Save to DB
-        applicationUserRepository.save(browsingUser);
+
+        browseUser.getUsersIFollow().add(userToFollow);
+
+        applicationUserRepository.save(browseUser);
 
         return new RedirectView("/user/" + id);
     }

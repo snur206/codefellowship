@@ -25,6 +25,35 @@ public class ApplicationUser implements UserDetails {
     // TODO: Default Constructor
     protected ApplicationUser() {
     }
+    @ManyToMany
+    @JoinTable(
+            name = "followers_to_followees",
+            joinColumns = {@JoinColumn(name = "userWhoIsFallowing")},
+            inverseJoinColumns = {@JoinColumn(name = "FollowedUser")}
+    )
+    Set<ApplicationUser> usersIFollow = new HashSet<>();
+
+    public Set<ApplicationUser> getUsersIFollow() {
+        return usersIFollow;
+    }
+
+    public Set<ApplicationUser> getUsersWhoFollowMe() {
+        return usersWhoFollowMe;
+    }
+
+    @ManyToMany(mappedBy = "usersIFollow")
+    Set<ApplicationUser> usersWhoFollowMe = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy")
+    Set<Post> listOfPost = new HashSet<>();
+
+    public Set<Post> getListOfPost() {
+        return listOfPost;
+    }
+    public void setListOfPost(Set<Post> listOfPost) {
+        this.listOfPost = listOfPost;
+    }
+
 
     // TODO: Constructor
     public ApplicationUser(String username, String password, String firstName, String lastName, Date dateOfBirth, String bio) {
@@ -36,33 +65,6 @@ public class ApplicationUser implements UserDetails {
         this.bio = bio;
     }
 
-    // Implement many to many
-    @ManyToMany
-    @JoinTable(
-            name = "followers_to_followees",
-            joinColumns = {@JoinColumn(name = "userWhoIsFollowing")},
-            inverseJoinColumns = {@JoinColumn(name = "FollowUser")}
-    )
-    Set<ApplicationUser> usersIFollow = new HashSet<>();
-
-    @ManyToMany(mappedBy = "usersIFollow")
-    Set<ApplicationUser> usersWhoFollowMe = new HashSet<>();
-
-    public Set<ApplicationUser> getUsersIFollow() {
-        return usersIFollow;
-    }
-
-    public void setUsersIFollow(Set<ApplicationUser> usersIFollow) {
-        this.usersIFollow = usersIFollow;
-    }
-
-    public Set<ApplicationUser> getUsersWhoFollowMe() {
-        return usersWhoFollowMe;
-    }
-
-    public void setUsersWhoFollowMe(Set<ApplicationUser> usersWhoFollowMe) {
-        this.usersWhoFollowMe = usersWhoFollowMe;
-    }
 
     // TODO: Getters and Setters
     public Long getId() {
