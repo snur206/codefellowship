@@ -39,5 +39,15 @@
     <li th:text="${userThatFollows.username}"></li>
 </ul>
 
+<h2>Add Post</h2>
+<form action="/myProfile" method="POST">
+    <textarea name="body" rows="4" cols="150" placeholder="Write Something"></textarea>
+    <input type="submit" value="Post"/>
+</form>
+
+<h2>User Post</h2>
+<ul th:each="post : ${authUser.listOfPost}">
+    <li th:text="${post.body}"></li>
+</ul>
 </body>
 </html>
